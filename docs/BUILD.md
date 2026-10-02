@@ -63,7 +63,44 @@ g++ -std=c++17 -O2 -I src -I tests tests/render_demo.cpp -o /tmp/render_demo \
 # → writes demo_pbd.wav (8 s): plucks dissolving into 3-bit dust
 ```
 
-## 4. Flash
+## 4. Flash a prebuilt binary (no ARM toolchain needed)
+
+You only need `dfu-util` — the `.bin` files come from `make` (or ask whoever
+built them):
+
+- **Windows:** install [DaisyToolchain v1.1.0](https://daisy.nyc3.cdn.digitaloceanspaces.com/installers/DaisyToolchain-1.1.0-win64.exe)
+  (bundles dfu-util; [setup guide](https://docs.daisy.audio/tutorials/toolchain-windows/)).
+  If `dfu-util` can't see the board, install the WinUSB driver with
+  [Zadig](https://zadig.akeo.ie/) while the module is in DFU mode — Zadig's
+  dropdown must show **STM32 BOOTLOADER** before you install the driver.
+- **macOS:** `brew install dfu-util`
+- **Linux:** `sudo apt install dfu-util`
+
+**Step 1 — Daisy bootloader (once per module).** `pbd.bin` is a `BOOT_SRAM`
+app, so the Daisy bootloader must live in the Seed's internal flash first.
+It ships with libDaisy at
+`deps/libDaisy/core/dsy_bootloader_v6_4-intdfu-2000ms.bin`.
+Put the module in DFU mode (**hold BOOT, tap RESET, release BOOT**), then:
+
+```bash
+dfu-util -a 0 -s 0x08000000:leave -D deps/libDaisy/core/dsy_bootloader_v6_4-intdfu-2000ms.bin -d ,0483:df11
+```
+
+This replaces internal flash, so any previous firmware is replaced.
+Afterwards the module always boots the bootloader, which waits ~2 s for a
+DFU upload before starting the app.
+
+**Step 2 — PBD firmware.** Build it with `make` (needs the ARM toolchain,
+§1), then tap RESET and run this inside the 2-second DFU window:
+
+```bash
+dfu-util -a 0 -s 0x90040000:leave -D build/pbd.bin -d ,0483:df11
+```
+
+If `dfu-util -l` doesn't show the device, it's almost always the DFU window
+having closed — tap RESET and retry immediately.
+
+## 5. Flash after building
 
 ### First time: install the Daisy bootloader (once per module)
 
@@ -92,7 +129,7 @@ Copy `build/pbd.bin` to the root of a **FAT32** SD card, insert it, and
 power-cycle the module. The bootloader flashes the first `.bin` it finds
 in the card root (only when it differs from what's loaded).
 
-## 5. Troubleshooting
+## 6. Troubleshooting
 
 | Symptom | Likely cause / fix |
 |---|---|
@@ -104,7 +141,7 @@ in the card root (only when it differs from what's loaded).
 | Echoes sound clean with CRUSH up | CRUSH at 0 = clean by design; turn CTRL 3 clockwise |
 | Delay time feels "steppy" | That's the TAP TEMPO takeover guard — move the TIME knob deliberately |
 
-## 6. Iterating
+## 7. Iterating
 
 Tweak `src/pbd_dsp.h` for DSP changes (test on host first — it's fast),
 `tweak src/main.cpp` for panel/UI changes, then `make && make program-dfu`.
