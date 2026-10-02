@@ -20,7 +20,8 @@ are usually fine for this firmware, but if you hit odd build errors, install
 and put its `bin/` on your `PATH`.
 
 **Windows**
-Use the [Daisy Toolchain installer](https://daisy.audio/tutorials/cpp-dev-env/),
+Use the [Daisy Toolchain installer](https://docs.daisy.audio/tutorials/toolchain-windows/)
+([direct download, v1.1.0](https://daisy.nyc3.cdn.digitaloceanspaces.com/installers/DaisyToolchain-1.1.0-win64.exe)),
 or install manually under MSYS2/MINGW64.
 
 Verify:
