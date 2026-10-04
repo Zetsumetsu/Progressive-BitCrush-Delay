@@ -42,7 +42,8 @@ pbd-module/
 │   └── wav_writer.h    # Minimal WAV writer for the demo
 ├── docs/
 │   ├── DESIGN.md   # Concept, DSP math, control map, UI spec, future ideas
-│   └── BUILD.md    # Toolchain setup, build, flashing, troubleshooting
+│   ├── BUILD.md    # Toolchain setup, build, flashing, troubleshooting
+│   └── USER_MANUAL.md  # Player's guide: panel map, techniques, tips
 ├── demo_pbd.wav    # 8 s demo: plucks dissolving into 3-bit dust
 ├── Makefile        # Firmware build (libDaisy)
 └── deps/           # libDaisy (git submodule — see docs/BUILD.md §2)
@@ -67,6 +68,7 @@ make program-dfu
 
 Full instructions: [docs/BUILD.md](docs/BUILD.md).
 Design deep-dive: [docs/DESIGN.md](docs/DESIGN.md).
+Player's guide: [docs/USER_MANUAL.md](docs/USER_MANUAL.md).
 
 ## Status
 
@@ -74,7 +76,7 @@ Design deep-dive: [docs/DESIGN.md](docs/DESIGN.md).
 - [x] Demo WAV rendered
 - [x] Daisy Patch firmware written (audio, controls, OLED UI)
 - [x] Firmware compiles and links for ARM Cortex-M7 (`build/pbd.bin`, 105 KB)
-- [ ] Tested on hardware
+- [x] Tested on hardware (flashed 2026-10-02; extensive field test 2026-10-03 across samples, sound generators, vocals, beats — performs as expected)
 
 ## License
 
